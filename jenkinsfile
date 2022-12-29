@@ -1,146 +1,125 @@
+import com.cloudbees.hudson.plugins.modeling.*
 pipeline {
     agent any
-	parameters {
-	    string(name: 'SAST_GIT_URL', defaultValue: 'https://github.com/harishpallapu/SourceCode_SAST.git', description: 'sast source code git url')
-	    string(name: 'FUNCTIONAL_WEB_GIT_URL', defaultValue: 'https://github.com/harishpallapu/webtest.git', description: 'functional automation web source code git url')
-	    string(name: 'FUNCTIONAL_MOBILE_GIT_URL', defaultValue: 'https://github.com/harishpallapu/ultranewmobile.git', description: 'functional automation mobile source code git url')
-		string(name: 'JMETER_GIT_URL', defaultValue: 'https://github.com/harishpallapu/folder.git', description: 'jmeter source code git url')
-        string(name: 'TOMCAT_IP', defaultValue: '13.233.172', description: 'tomcat server ip address')
-		string(name: 'NEXUS_IP', defaultValue: '13.232.184.141', description: 'nexus server ip address')
+
+    tools {
+        // Install the Maven version configured as "M3" and add it to the path.
+        maven "M2_HOME"
     }
     stages {
-        stage('source code checkout') {
+            stage('load parameters') { 
             steps {
-                git "${params.SAST_GIT_URL}"
-				sh 'git clone https://github.com/harishpallapu/sonarqube-scanner-scripts.git'
+                load "parameters.groovy"
             }
-        }
-        stage('SAST analysis') {
+        }	
+        stage('SAST Analysis') {
             steps {
-				sh 'cp -r sonarqube-scanner-scripts/* .'
-				sh './sonar-scanner-4.6.2.2472-linux/bin/sonar-scanner'
-				sh 'ls -al'
-				sh 'cat .scannerwork/report-task.txt  | mail -s "Build-no-${BUILD_NUMBER}-sonar-reports-sucessfull" nihas0505@gmail.com'
+                script {
+                    try {
+                // Get some code from a GitHub repository
+						if (env.SAST_GIT_URL != 'null') {				
+                git "${env.SAST_GIT_URL}"
+                bat "git clone https://github.com/harishpallapu/sonarqube_scannar_windows.git"
+                bat "./sonarqube_scannar_windows/sonar-scanner-4.6.2.2472-windows/bin/sonar-scanner.bat"
+					        } else {
+                                                        echo "skipping the stage ${env.STAGE_NAME}.............................!"				
+                   } } catch (err) {
+							echo err.getMessage()
+							unstable(message: "${STAGE_NAME} is unstable")
+							echo "Error detected, ${env.STAGE_NAME} failed...............!"
+						}                
+                // Run Maven on a Unix agent.
+                //sh "mvn -Dmaven.test.failure.ignore=true clean package"
             }
+        } 
         }
         stage('SCA') {
             steps {
-	    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-				sh 'wget https://github.com/jeremylong/DependencyCheck/releases/download/v6.2.2/dependency-check-6.2.2-release.zip'
-				sh 'unzip -q dependency-check-6.2.2-release.zip'
-				sh './dependency-check/bin/dependency-check.sh --noupdate --project "TeachersFCU" --scan "Shoppingcart/lib/" --format HTML --out .'
-            }
+			      script {
+						try {
+							bat '''
+							wget https://github.com/jeremylong/DependencyCheck/releases/download/v6.2.2/dependency-check-6.2.2-release.zip
+							 PowerShell Expand-Archive -Path "dependency-check-6.2.2-release.zip"  
+							./dependency-check-6.2.2-release/dependency-check/bin/dependency-check.bat --noupdate --project "TeachersFCU" --scan "Shoppingcart/lib/" --format HTML --out .
+						    '''
+						} catch (err) {
+							echo err.getMessage()
+							unstable(message: "${STAGE_NAME} is unstable")
+							echo "Error detected, ${env.STAGE_NAME} failed..................!"
+						}
+				}
+
 	    }
         }
 	stage('build') {
             steps {
-	    			sh 'mvn clean package'			
+				script {
+						try {
+						if (env.BUILD_GIT_URL != 'null') {
+                git "${env.BUILD_GIT_URL}"
+							bat 'mvn clean package'
+					        } else {
+                                                        echo 'skipping the stage ${env.STAGE_NAME}.............................!'
+                                                        }							
+						} catch (err) {
+							echo err.getMessage()
+							unstable(message: "${STAGE_NAME} is unstable")
+							echo "Error detected, ${env.STAGE_NAME} failed..................!"
+						}
+				}							
             }
 	 }
-	stage('deploy to tomcat') {
-            steps {
-	    	sshagent(['deploy_user']) {
-    				sh "scp -o StrictHostKeyChecking=no target/*.war ec2-user@${params.TOMCAT_IP}:/opt/tomcat/webapps"		
-		}		
-            }
+     stage("deploy") {
+         steps {
+					script {
+						try {
+						if (env.TOMCAT_IP != 'null') {						
+            deploy adapters: [tomcat8(credentialsId: 'Tomcat', path: '', url: '${env.TOMCAT_IP}')], contextPath: null, war: '**/*.war'
+					        } else {
+                                                        echo 'skipping the stage ${env.STAGE_NAME}.............................!'	    
+					}	} catch (err) {
+							echo err.getMessage()
+							unstable(message: "${STAGE_NAME} is unstable")
+							echo "Error detected, ${env.STAGE_NAME} failed..................!"
+						}		
+					}
+				}
 	}
 	stage('FunctionalAutomation_Web') {
-           steps {
-		   catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-	    			sh """git clone ${params.FUNCTIONAL_WEB_GIT_URL}
-					cd webtest
-					mvn clean test """		
-            }
-			}
+           			steps {
+		   			script {
+						try {
+						if (env.FUNCTIONAL_WEB_GIT_URL != 'null') {						
+							bat """git clone ${env.FUNCTIONAL_WEB_GIT_URL}
+							cd webtest
+							mvn test """
+					        } else {
+                                                        echo 'skipping the stage ${env.STAGE_NAME}.............................!'														
+					}	} catch (err) {
+							echo err.getMessage()
+							unstable(message: "${STAGE_NAME} is unstable")
+							echo "Error detected, ${env.STAGE_NAME} failed..................!"
+						}					
+					}
+	 		}
 	 }
-		stage('FunctionalAutomation_Mobile') {
-            steps {
-			catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-	    			sh """ git clone ${params.FUNCTIONAL_MOBILE_GIT_URL}
-					cd ultranewmobile
-					mvn clean test """
-            }
-			}
-	 }
-	 stage('DAST') {
-            steps {
-			catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-	    			sh '''mkdir dast-testing
-					cd dast-testing
-					wget https://github.com/Arachni/arachni/releases/download/v1.5.1/arachni-1.5.1-0.5.12-linux-x86_64.tar.gz
-					tar -xvzf arachni-1.5.1-0.5.12-linux-x86_64.tar.gz
-					chmod 777 -R *
-					mv arachni-1.5.1-0.5.12 arachni
-					./arachni/bin/arachni http://15.206.168.88:8080/SpringMVCAnnotationShoppingCart/ --checks=* --report-save-path=reports.afr
-					./arachni/bin/arachni_reporter reports.afr --reporter=html:outfile=report-${BUILD_NUMBER}.zip '''			
-            }
-			}
-	 }
-        stage('jmeter') {
-            steps {
-	    			sh 'pwd'
-				sh 'ls -al'
-				sh "git clone ${params.JMETER_GIT_URL}"
-				sh """cd folder
-					chmod 777 -R *
-					./apache-jmeter-5.4.1/apache-jmeter-5.4.1/bin/jmeter -n -t OnlineShop_1.jmx -l OnlineShop_result_${BUILD_NUMBER}.jtl -e -o OnlineShop_${BUILD_NUMBER}.html """
-				
-            }
-        }
-	stage('upload reports to nexus') {
-            steps {
-	    			sh 'zip -r web-test-report-${BUILD_NUMBER}.zip webtest/src/test/java/com/shoppingcart/Reports/*'
-	    			sh 'zip -r mobile-test-report-${BUILD_NUMBER}.zip ultranewmobile/src/test/java/com/shoppingcart/Reports/*'
-				sh 'zip -r jmeterreport-${BUILD_NUMBER}.zip folder/OnlineShop_${BUILD_NUMBER}.html/*'
-				
-				sh 'mkdir test-reports'
-				
-				sh 'cp .scannerwork/report-task.txt test-reports'
-				sh 'cp jmeterreport-${BUILD_NUMBER}.zip test-reports'
-				sh 'cp web-test-report-$BUILD_NUMBER.zip test-reports'
-				sh 'cp mobile-test-report-$BUILD_NUMBER.zip test-reports'
-				sh 'cp -r dast-testing/report-${BUILD_NUMBER}.zip test-reports'
-				
-				sh """
-				    cd test-reports
-				    mv report-task.txt report-task-${BUILD_NUMBER}.txt
-				    curl --upload-file report-task-${BUILD_NUMBER}.txt -u admin:admin -v http://${params.NEXUS_IP}:8081/repository/jenkins-reports/sast-reports/
-				    curl --upload-file web-test-report-${BUILD_NUMBER}.zip -u admin:admin -v http://${params.NEXUS_IP}:8081/repository/jenkins-reports/web-test-reports/
-				    curl --upload-file mobile-test-report-${BUILD_NUMBER}.zip -u admin:admin -v http://${params.NEXUS_IP}:8081/repository/jenkins-reports/mobile-test-reports/
-				    curl --upload-file report-${BUILD_NUMBER}.zip -u admin:admin -v http://${params.NEXUS_IP}:8081/repository/jenkins-reports/dast-reports/
-				    curl --upload-file jmeterreport-${BUILD_NUMBER}.zip -u admin:admin -v http://${params.NEXUS_IP}:8081/repository/jenkins-reports/jmeter-reports/ """
-            }
-        }
+	stage('FunctionalAutomation_Mobile') {
+            				steps {
+		   			script {
+						try {
+						if (env.FUNCTIONAL_MOBILE_GIT_URL != 'null') {						
+							bat """ git clone ${env.FUNCTIONAL_MOBILE_GIT_URL}
+							cd mobiletest
+							mvn test """
+					        } else {
+                                                        echo 'skipping the stage ${env.STAGE_NAME}.............................!'							
+					}	} catch (err) {
+							echo err.getMessage()
+							unstable(message: "${STAGE_NAME} is unstable")
+							echo "Error detected, ${env.STAGE_NAME} failed..................!"
+							}
+					}
+				}
 	}
-	post {
-        // Clean after build
-        always {
-		mail to: 'nihas0505@gmail.com',
-          	subject: "Status of pipeline: ${currentBuild.fullDisplayName}",
-         	body: """${env.BUILD_URL} has result ${currentBuild.result}
-		
-		Please find build reports................................!
-		
-		SAST REPORTS
-		http://${params.NEXUS_IP}:8081/repository/jenkins-reports/sast-reports/report-task-${BUILD_NUMBER}.txt
-		--------------------------------------------------------------------------------------------------------------------------------------
-		FUNCTIONAL AUTOMATION WEB REPORTS
-		http://${params.NEXUS_IP}:8081/repository/jenkins-reports/web-test-reports/web-test-report-${BUILD_NUMBER}.zip
-		----------------------------------------------------------------------------------------------------------------------------------------
-		FUNCTIONAL AUTOMATION MOBILE REPORTS
-		http://${params.NEXUS_IP}:8081/repository/jenkins-reports/mobile-test-reports/mobile-test-report-${BUILD_NUMBER}.zip
-		------------------------------------------------------------------------------------------------------------------------------------------
-		DAST REPORTS
-		http://${params.NEXUS_IP}:8081/repository/jenkins-reports/dast-reports/report-${BUILD_NUMBER}.zip
-		-----------------------------------------------------------------------------------------------------------------------------------------
-		JMETER REPORTS
-		http://${params.NEXUS_IP}:8081/repository/jenkins-reports/jmeter-reports/jmeterreport-${BUILD_NUMBER}.zip
-		
-		FOR MORE INFORMATION PLEASE CONTACT DEVSECOPS TEAM...........!"""
-		jiraSendBuildInfo site: 'vamsisanagala.atlassian.net'
-		cleanWs(cleanWhenNotBuilt: false,
-                    deleteDirs: true,
-                    disableDeferredWipeout: true)
-        }
-    }
-}
+	}
+	}
