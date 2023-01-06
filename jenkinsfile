@@ -132,7 +132,6 @@ pipeline {
 	}
 	}
  	post {
-        // Clean after build
         always {
 		mail to: 'flexib08@gmail.com',
         subject: "Status of pipeline: ${currentBuild.fullDisplayName}",
