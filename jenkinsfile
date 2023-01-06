@@ -82,7 +82,7 @@ pipeline {
                 script {
                     try {
 						if (env.DAST_IP != 'null') {		    
-                       arachniScanner checks: '*', format: 'html', url: 'http://127.0.0.1:9292/hello-world/'
+                       arachniScanner checks: '*', format: 'html', url: 'http://localhost:8084/hello-world/'
 					        } else {
                                                         echo 'skipping the stage ${env.STAGE_NAME}.............................!'                       
              }       } catch (err) {
