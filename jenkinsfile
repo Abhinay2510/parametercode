@@ -130,10 +130,10 @@ pipeline {
 					}
 				}
 	}
+	}
  	post {
         always {
 mail bcc: '', body: '${env.BUILD_URL} has result ${currentBuild.result}', cc: '', from: '', replyTo: '', subject: 'Status of pipeline: ${currentBuild.fullDisplayName}', to: 'flexib08@gmail.com'
-}
 }
 }
 }
