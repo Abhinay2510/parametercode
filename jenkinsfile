@@ -14,20 +14,8 @@ pipeline {
         }
 	stage('branch') {
             steps {
-				script {
-						try {
-						if (env.BRANCH_NAME != 'null') {
-                git "${env.BRANCH_NAME}"
-	                bat "git clone https://github.com/harishpallapu/parametercode.git"
-   					        } else {
-                                                        echo 'skipping the stage ${env.STAGE_NAME}.............................!'
-                                                        }							
-						} catch (err) {
-							echo err.getMessage()
-							unstable(message: "${STAGE_NAME} is unstable")
-							echo "Error detected, ${env.STAGE_NAME} failed..................!"
-						}
-				}							
+                git "hello"
+	                bat "git clone https://github.com/harishpallapu/parametercode.git"							
             }
 	 }	
         stage('SAST Analysis') {
