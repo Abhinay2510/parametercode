@@ -144,7 +144,7 @@ pipeline {
 						try {
 						if (env.JMETER_GIT_URL != 'null') {						
 							bat """
-                            git clone ${env.JMETER_GIT_URL}
+                            git clone "${env.JMETER_GIT_URL}"
 			    dir
                             cd folder
                             C:/ProgramData/Jenkins/.jenkins/workspace/${JOB_NAME}/folder/apache-jmeter-5.4.1/apache-jmeter-5.4.1/bin/jmeter.bat -n -t OnlineShop_1.jmx -l OnlineShop_result.jtl -e -o OnlineShop_%BUILD_NUMBER%.html
