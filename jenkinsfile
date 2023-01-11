@@ -165,16 +165,14 @@ pipeline {
         }              
     }		
  	post {
-        //Clean after build
+        // Clean after build
         always {
-		mail to: "${env.MAIL_ID}",
+		mail to: 'nihas0505@gmail.com',
         subject: "Status of pipeline: ${currentBuild.fullDisplayName}",
-        body: "Result - ${currentBuild.result}"
-	cleanWs(cleanWhenNotBuilt: false,
-        deleteDirs: true,
-        disableDeferredWipeout: true)
-
+        body: """Result is ${currentBuild.result}
+        
 		Please find build reports................................!
+		
 		
 
 		JMETER REPORTS
