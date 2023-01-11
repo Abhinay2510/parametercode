@@ -11,8 +11,7 @@ pipeline {
             steps {
                 load "parameters.groovy"
             }
-        }
-
+        }	
         stage('SAST Analysis') {
             steps {
                 script {
@@ -25,7 +24,7 @@ pipeline {
 					        } else {
                                                         echo "skipping the stage ${env.STAGE_NAME}.............................!"				
                    } } catch (err) {
-							echo error.getMessage()
+							echo err.getMessage()
 							unstable(message: "${STAGE_NAME} is unstable")
 							echo "Error detected, ${env.STAGE_NAME} failed...............!"
 						}                
@@ -39,9 +38,9 @@ pipeline {
 			      script {
 						try {
 							bat '''
-							wget "https://github.com/jeremylong/DependencyCheck/releases/download/v6.2.2/dependency-check-6.2.2-release.zip
+							wget https://github.com/jeremylong/DependencyCheck/releases/download/v6.2.2/dependency-check-6.2.2-release.zip
 							 PowerShell Expand-Archive -Path "dependency-check-6.2.2-release.zip"  
-							./dependency-check-6.2.2-release/dependency-check/bin/dependency-check.bat --noupdate --project "TeachersFCU" --scan "Shoppingcart/lib/" --format HTML --out . 
+							./dependency-check-6.2.2-release/dependency-check/bin/dependency-check.bat --noupdate --project "TeachersFCU" --scan "Shoppingcart/lib/" --format HTML --out .
 						    '''
 						} catch (err) {
 							echo err.getMessage()
@@ -73,8 +72,15 @@ pipeline {
      stage("deploy") {
          steps {
 					script {
-				
+						if (env.TOMCAT_IP != 'null') {						
             deploy adapters: [tomcat8(credentialsId: 'tomcat webserver', path: '', url: 'http://localhost:8084/')], contextPath: null, war: '**/*.war'
+					        } else {
+                                                        echo 'skipping the stage ${env.STAGE_NAME}.............................!'	    
+					}	} catch (err) {
+							echo err.getMessage()
+							unstable(message: "${STAGE_NAME} is unstable")
+							echo "Error detected, ${env.STAGE_NAME} failed..................!"
+						}		
 					}
 				}
 	}
