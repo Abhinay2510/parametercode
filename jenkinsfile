@@ -18,7 +18,7 @@ pipeline {
                     try {
                 // Get some code from a GitHub repository
 						if (env.SAST_GIT_URL != 'null') {				
-                git "${env.SAST_GIT_URL}"
+                git ""${env.SAST_GIT_URL}""
                 bat "git clone https://github.com/harishpallapu/sonarqube_scannar_windows.git"
                 bat "./sonarqube_scannar_windows/sonar-scanner-4.6.2.2472-windows/bin/sonar-scanner.bat"
 					        } else {
@@ -74,7 +74,7 @@ pipeline {
 					script {
 						try {					
 						if (env.TOMCAT_IP != 'null') {						
-            deploy adapters: [tomcat8(credentialsId: 'tomcat webserver', path: '', url: "${env.TOMCAT_IP}")], contextPath: null, war: '**/*.war'
+            deploy adapters: [tomcat8(credentialsId: 'tomcat webserver', path: '', url: ""${env.TOMCAT_IP}"")], contextPath: null, war: '**/*.war'
 					        } else {
                                                         echo 'skipping the stage ${env.STAGE_NAME}.............................!'	    
 					}	} catch (err) {
@@ -107,8 +107,8 @@ pipeline {
 		   			script {
 						try {
 						if (env.FUNCTIONAL_WEB_GIT_URL != 'null') {						
-							bat """git clone ${env.FUNCTIONAL_WEB_GIT_URL}
-							cd webtest
+							bat ""git clone ${env.FUNCTIONAL_WEB_GIT_URL}""
+							bat """cd webtest
 							mvn test """
 					        } else {
                                                         echo 'skipping the stage ${env.STAGE_NAME}.............................!'														
@@ -125,8 +125,8 @@ pipeline {
 		   			script {
 						try {
 						if (env.FUNCTIONAL_MOBILE_GIT_URL != 'null') {						
-							bat """ git clone ${env.FUNCTIONAL_MOBILE_GIT_URL}
-							cd mobiletest
+							bat "" git clone ${env.FUNCTIONAL_MOBILE_GIT_URL}""
+							bat """ cd mobiletest
 							mvn test """
 					        } else {
                                                         echo 'skipping the stage ${env.STAGE_NAME}.............................!'							
@@ -144,7 +144,7 @@ pipeline {
 						try {
 						if (env.JMETER_GIT_URL != 'null') {						
 							bat """
-                            git clone "${env.JMETER_GIT_URL}"
+                            git clone ${env.JMETER_GIT_URL}
 			    dir
                             cd folder
                             C:/ProgramData/Jenkins/.jenkins/workspace/${JOB_NAME}/folder/apache-jmeter-5.4.1/apache-jmeter-5.4.1/bin/jmeter.bat -n -t OnlineShop_1.jmx -l OnlineShop_result.jtl -e -o OnlineShop_%BUILD_NUMBER%.html
