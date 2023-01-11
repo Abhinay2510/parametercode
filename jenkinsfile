@@ -167,7 +167,7 @@ pipeline {
  	post {
         // Clean after build
         always {
-		mail to: 'nihas0505@gmail.com',
+		mail to: '${env.MAIL_ID}',
         subject: "Status of pipeline: ${currentBuild.fullDisplayName}",
         body: """Result is ${currentBuild.result}
         
@@ -183,7 +183,10 @@ pipeline {
 		
 		THE PIPELINE IS SUCCESSFULL AND THIS MAIL IS TO REQUEST FOR QA SIGNOFF AND PROCEED TO UAT 0R PROD ENV
 		
-		For more information please contact DEVSECOPS team...........!"""   	
+		For more information please contact DEVSECOPS team...........!"""
+        cleanWs(cleanWhenNotBuilt: false,
+        deleteDirs: true,
+        disableDeferredWipeout: true)
 }
 }
 }
