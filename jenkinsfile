@@ -25,7 +25,7 @@ pipeline {
 					        } else {
                                                         echo "skipping the stage ${env.STAGE_NAME}.............................!"				
                    } } catch (err) {
-							echo err.getMessage()
+							echo error.getMessage()
 							unstable(message: "${STAGE_NAME} is unstable")
 							echo "Error detected, ${env.STAGE_NAME} failed...............!"
 						}                
