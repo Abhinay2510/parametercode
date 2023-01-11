@@ -72,6 +72,7 @@ pipeline {
      stage("deploy") {
          steps {
 					script {
+						try {					
 						if (env.TOMCAT_IP != 'null') {						
             deploy adapters: [tomcat8(credentialsId: 'tomcat webserver', path: '', url: 'http://localhost:8084/')], contextPath: null, war: '**/*.war'
 					        } else {
