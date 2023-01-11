@@ -177,7 +177,7 @@ pipeline {
      
                
                
-               curl -T "C:/ProgramData/Jenkins/.jenkins/workspace/${JOB_NAME}/jmeter-test-report-%BUILD_NUMBER%.zip" -u admin:admin123 -v http://localhost:8081/repository/flexib3i-Pipeline-Reports/
+               curl -T "C:/ProgramData/Jenkins/.jenkins/workspace/${env.JOB_NAME}/jmeter-test-report-%BUILD_NUMBER%.zip" -u admin:admin123 -v http://localhost:8081/repository/flexib3i-Pipeline-Reports/
                '''
                            }
         }              
