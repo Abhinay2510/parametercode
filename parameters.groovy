@@ -4,4 +4,4 @@ env.TOMCAT_IP=
 env.FUNCTIONAL_WEB_GIT_URL=
 env.FUNCTIONAL_MOBILE_GIT_URL=
 env.JMETER_GIT_URL=
-env.NEXUS_IP="http://localhost:8081"
+env.NEXUS_IP=
