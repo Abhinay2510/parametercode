@@ -173,6 +173,19 @@ pipeline {
 	cleanWs(cleanWhenNotBuilt: false,
         deleteDirs: true,
         disableDeferredWipeout: true)
+
+		Please find build reports................................!
+		
+
+		JMETER REPORTS
+		http://localhost:8081/repository/flexib3i-Pipeline-Reports/jmeter-test-report/jmeter-test-report-%BUILD_NUMBER%.zip
+		
+
+		
+		
+		THE PIPELINE IS SUCCESSFULL AND THIS MAIL IS TO REQUEST FOR QA SIGNOFF AND PROCEED TO UAT 0R PROD ENV
+		
+		For more information please contact DEVSECOPS team...........!"""   	
 }
 }
 }
