@@ -184,10 +184,7 @@ pipeline {
         
 		Please find build reports................................!
 		
-		SAST REPORTS
-		http://140.238.240.203:8081/repository/flexib3i-Pipeline-Reports/sast-reports/report-task.txt
-		--------------------------------------------------------------------------------------------------------------------------------------
-		----------------------------------------------------------------------------------------------------------------------------------------
+
 		JMETER REPORTS
 		http://140.238.240.203:8081/repository/flexib3i-Pipeline-Reports/jmeter-reports/jmeter-test-report-60.zip
 		
