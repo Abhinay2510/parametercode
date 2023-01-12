@@ -187,6 +187,7 @@ pipeline {
 		Please find build reports................................!
 		SAST REPORTS
 		http://140.238.240.203:8081/repository/flexib3i-Pipeline-Reports/sast-reports/report-task.txt
+		https://sonarcloud.io/dashboard?id=Shoppingcart
 		--------------------------------------------------------------------------------------------------------------------------------------
 		FUNCTIONAL AUTOMATION WEB REPORTS
 		http://140.238.240.203:8081/repository/flexib3i-Pipeline-Reports/web-test-report/web-test-report-%BUILD_NUMBER%.zip
