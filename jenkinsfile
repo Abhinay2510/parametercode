@@ -90,7 +90,11 @@ pipeline {
                 script {
                     try {
 						if (env.DAST_IP != 'null') {		    
-                       arachniScanner --http-username=admin@admin.admin --http-password=administrator checks: '*', format: 'html', url: "${env.DAST_URL}"
+                       arachniScanner checks: '*'
+format: 'html'
+http_username: myusername
+http_password: mypassword
+url: "${env.DAST_URL}"
 					        } else {
                                                         echo 'skipping the stage ${env.STAGE_NAME}.............................!'                       
              }       } catch (err) {
