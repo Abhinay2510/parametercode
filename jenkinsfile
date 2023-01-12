@@ -91,7 +91,7 @@ pipeline {
                 script {
                     try {
 						if (env.DAST_IP != 'null') {
-		       withCredentials([usernamePassword(credentialsId: 'arachni-user', usernameVariable: 'flexib08@gmail.com', passwordVariable: 'flexibplus')]) {				
+		       withCredentials([usernamePassword(credentialsId: 'arachni-user', usernameVariable: 'flexib08@gmail.com', passwordVariable: 'flexibplus')]) 				
                        arachniScanner checks: '*', format: 'html', url: 'http://140.238.240.203:8084/SpringMVCAnnotationShoppingCart/'
 					        } else {
                                                         echo 'skipping the stage ${env.STAGE_NAME}.............................!'                       
@@ -103,8 +103,6 @@ pipeline {
                 }
             }
         }
-		}	
-	
 	stage('FunctionalAutomation_Web') {
            			steps {
 		   			script {
