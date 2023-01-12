@@ -184,7 +184,7 @@ pipeline {
 		
 
 		JMETER REPORTS
-		http://140.238.240.203:8081/repository/flexib3i-Pipeline-Reports/jmeter-test-report/jmeter-test-report-%BUILD_NUMBER%.zip
+		http://140.238.240.203:8081/repository/flexib3i-Pipeline-Reports/jmeter-test-report-%BUILD_NUMBER%.zip
 		
 
 		
