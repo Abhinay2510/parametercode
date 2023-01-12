@@ -92,7 +92,7 @@ pipeline {
 						if (env.DAST_IP != 'null') {		    
                        arachniScanner checks: '*', format: 'html', url: "${env.DAST_URL}"
 					        } else {
-                                                        echo 'skipping the stage ${env.STAGE_NAME}.............................!'                       
+                          
              }       } catch (err) {
 							echo err.getMessage()
 							unstable(message: "${STAGE_NAME} is unstable")
