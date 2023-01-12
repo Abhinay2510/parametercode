@@ -35,12 +35,12 @@ pipeline {
         }
         stage('SCA') {
             steps {
-	        script {
-          		try {
-				bat '''
-				wget https://github.com/jeremylong/DependencyCheck/releases/download/v6.2.2/dependency-check-6.2.2-release.zip
-				 PowerShell Expand-Archive -Path "dependency-check-6.2.2-release.zip"  
-            ./dependency-check-6.2.2-release/dependency-check/bin/dependency-check.bat --noupdate --project "TeachersFCU" --scan "Shoppingcart/lib/" --format HTML --out .
+			      script {
+						try {
+							bat '''
+							wget https://github.com/jeremylong/DependencyCheck/releases/download/v6.2.2/dependency-check-6.2.2-release.zip
+							 PowerShell Expand-Archive -Path "dependency-check-6.2.2-release.zip"  
+							./dependency-check-6.2.2-release/dependency-check/bin/dependency-check.bat --noupdate --project "TeachersFCU" --scan "Shoppingcart/lib/" --format HTML --out .
 						    '''
 						} catch (err) {
 							echo err.getMessage()
@@ -73,8 +73,7 @@ pipeline {
          steps {
 					script {
 						try {					
-						if (env.TOMCAT_IP != 'null') {	
-						
+						if (env.TOMCAT_IP != 'null') {						
             deploy adapters: [tomcat8(credentialsId: 'tomcat webserver', path: '', url: "${env.TOMCAT_IP}")], contextPath: null, war: '**/*.war'
 					        } else {
                                                         echo 'skipping the stage ${env.STAGE_NAME}.............................!'	    
@@ -90,9 +89,8 @@ pipeline {
             steps {
                 script {
                     try {
-						if (env.DAST_IP != 'null') {
-		      			
-                       arachniScanner checks: '*', format: 'html', url: "${env.DAST_URL}"
+						if (env.DAST_IP != 'null') {		    
+                       arachniScanner checks: '*', format: 'html', url: 'http://localhost:8084/hello-world/'
 					        } else {
                                                         echo 'skipping the stage ${env.STAGE_NAME}.............................!'                       
              }       } catch (err) {
@@ -102,14 +100,15 @@ pipeline {
                     }
                 }
             }
-        }
+        }	
+	
 	stage('FunctionalAutomation_Web') {
            			steps {
 		   			script {
 						try {
 						if (env.FUNCTIONAL_WEB_GIT_URL != 'null') {						
-							bat ""git clone ${env.FUNCTIONAL_WEB_GIT_URL}""
-							bat """cd webtest
+							bat """git clone ${env.FUNCTIONAL_WEB_GIT_URL}
+							cd webtest
 							mvn test """
 					        } else {
                                                         echo 'skipping the stage ${env.STAGE_NAME}.............................!'														
@@ -126,8 +125,8 @@ pipeline {
 		   			script {
 						try {
 						if (env.FUNCTIONAL_MOBILE_GIT_URL != 'null') {						
-							bat "" git clone ${env.FUNCTIONAL_MOBILE_GIT_URL}""
-							bat """ cd mobiletest
+							bat """ git clone ${env.FUNCTIONAL_MOBILE_GIT_URL}
+							cd mobiletest
 							mvn test """
 					        } else {
                                                         echo 'skipping the stage ${env.STAGE_NAME}.............................!'							
@@ -163,36 +162,35 @@ pipeline {
         stage('Nexus') {
             steps {
                 
-               bat 'tar -a -c -f jmeter-test-report-%BUILD_NUMBER%.zip folder/OnlineShop_%BUILD_NUMBER%.html/*'
-               bat '''mkdir test-reports
-               
-               cd test-reports
-               
-               curl -T "C:/ProgramData/Jenkins/.jenkins/workspace/fail/Shoppingcart/.scannerwork/report-task.txt" -u admin:admin123 -v http://140.238.240.203:8081/repository/flexib3i-Pipeline-Reports/ sast-reports/  
+               bat '''tar -a -c -f jmeter-test-report-%BUILD_NUMBER%.zip folder/OnlineShop_%BUILD_NUMBER%.html/*
+     
                
                
-               curl -T "C:/ProgramData/Jenkins/.jenkins/workspace/fail/jmeter-test-report-%BUILD_NUMBER%.zip" -u admin:admin123 -v http://140.238.240.203:8081/repository/flexib3i-Pipeline-Reports/jmeter-reports/ 
+               curl -T "C:/ProgramData/Jenkins/.jenkins/workspace/Flexib/jmeter-test-report-%BUILD_NUMBER%.zip" -u admin:admin123 -v http://localhost:8081/repository/flexib3i-Pipeline-Reports/
+               '''
                            }
         }              
     }		
  	post {
-        //Clean after build
+        // Clean after build
         always {
 	mail to: "flexib08@gmail.com",
         subject: "Status of pipeline: ${currentBuild.fullDisplayName}",
-        body: """${env.BUILD_URL} has result ${currentBuild.result}
+        body: """Result is ${currentBuild.result}
         
 		Please find build reports................................!
 		
+		
 
 		JMETER REPORTS
-		http://140.238.240.203:8081/repository/flexib3i-Pipeline-Reports/jmeter-reports/jmeter-test-report-61.zip
+		http://localhost:8081/repository/flexib3i-Pipeline-Reports/jmeter-test-report/jmeter-test-report-62.zip
+		
+
 		
 		
-	         THE PIPELINE IS SUCCESSFULL AND THIS MAIL IS TO REQUEST FOR QA SIGNOFF AND PROCEED TO UAT 0R PROD ENV
+		THE PIPELINE IS SUCCESSFULL AND THIS MAIL IS TO REQUEST FOR QA SIGNOFF AND PROCEED TO UAT 0R PROD ENV
 		
-		For more information please contact DEVSECOPS team...........!
-		"""
+		For more information please contact DEVSECOPS team...........!"""
 
 }
 }
