@@ -190,16 +190,16 @@ pipeline {
 		https://sonarcloud.io/dashboard?id=Shoppingcart
 		--------------------------------------------------------------------------------------------------------------------------------------
 		FUNCTIONAL AUTOMATION WEB REPORTS
-		http://140.238.240.203:8081/repository/flexib3i-Pipeline-Reports/web-test-report/web-test-report-%BUILD_NUMBER%.zip
+		http://140.238.240.203:8081/repository/flexib3i-Pipeline-Reports/web-test-report/web-test-report-$BUILD_NUMBER.zip
 		----------------------------------------------------------------------------------------------------------------------------------------
 		FUNCTIONAL AUTOMATION MOBILE REPORTS
-		http://140.238.240.203:8081/repository/flexib3i-Pipeline-Reports/mobile-test-report/mobile-test-report-%BUILD_NUMBER%.zip
+		http://140.238.240.203:8081/repository/flexib3i-Pipeline-Reports/mobile-test-report/mobile-test-report-$BUILD_NUMBER.zip
 		------------------------------------------------------------------------------------------------------------------------------------------
 		-----------------------------------------------------------------------------------------------------------------------------------------		
 		
 
 		JMETER REPORTS
-		http://140.238.240.203:8081/repository/flexib3i-Pipeline-Reports/jmeter-test-report/jmeter/jmeter-test-report-%BUILD_NUMBER%.zip
+		http://140.238.240.203:8081/repository/flexib3i-Pipeline-Reports/jmeter-test-report/jmeter/jmeter-test-report-$BUILD_NUMBER.zip
 		
 
 		
