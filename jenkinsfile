@@ -177,9 +177,6 @@ pipeline {
 	mail to: "flexib08@gmail.com",
         subject: "Status of pipeline: ${currentBuild.fullDisplayName}",
         body: """Result is ${currentBuild.result}
-        cleanWs(cleanWhenNotBuilt: false,    
-        deleteDirs: true,
-        disableDeferredWipeout: true)
         
 		Please find build reports................................!
 		
