@@ -35,12 +35,12 @@ pipeline {
         }
         stage('SCA') {
             steps {
-			      script {
-						try {
-							bat '''
-							wget https://github.com/jeremylong/DependencyCheck/releases/download/v6.2.2/dependency-check-6.2.2-release.zip
-							 PowerShell Expand-Archive -Path "dependency-check-6.2.2-release.zip"  
-							./dependency-check-6.2.2-release/dependency-check/bin/dependency-check.bat --noupdate --project "TeachersFCU" --scan "Shoppingcart/lib/" --format HTML --out .
+	        script {
+          		try {
+				bat '''
+				wget https://github.com/jeremylong/DependencyCheck/releases/download/v6.2.2/dependency-check-6.2.2-release.zip
+				 PowerShell Expand-Archive -Path "dependency-check-6.2.2-release.zip"  
+            ./dependency-check-6.2.2-release/dependency-check/bin/dependency-check.bat --noupdate --project "TeachersFCU" --scan "Shoppingcart/lib/" --format HTML --out .
 						    '''
 						} catch (err) {
 							echo err.getMessage()
@@ -90,7 +90,7 @@ pipeline {
                 script {
                     try {
 						if (env.DAST_IP != 'null') {		    
-                       arachniScanner checks: '*', format: 'html', url: 'http://localhost:8084/hello-world/'
+                       arachniScanner checks: '*', format: 'html', url: "{env.DAST_URL}"
 					        } else {
                                                         echo 'skipping the stage ${env.STAGE_NAME}.............................!'                       
              }       } catch (err) {
