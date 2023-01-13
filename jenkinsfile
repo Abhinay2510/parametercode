@@ -90,9 +90,9 @@ pipeline {
                 script {
                     try {
 						if (env.DAST_IP != 'null') {		    
-                       arachniScanner checks: '*', format: 'html', url: 'http://localhost:8084/hello-world/'
+                       arachniScanner checks: '*', format: 'html', url: "${env.DAST_URL}"
 					        } else {
-                                                        echo 'skipping the stage ${env.STAGE_NAME}.............................!'                       
+                                                       echo 'skipping the stage ${env.STAGE_NAME}.............................!'                           
              }       } catch (err) {
 							echo err.getMessage()
 							unstable(message: "${STAGE_NAME} is unstable")
@@ -162,11 +162,18 @@ pipeline {
         stage('Nexus') {
             steps {
                 
-               bat '''tar -a -c -f jmeter-test-report-%BUILD_NUMBER%.zip folder/OnlineShop_%BUILD_NUMBER%.html/*
-     
+              
+	       bat 'tar -a -c -f web-test-report-%BUILD_NUMBER%.zip webtest/target/surefire-reports/* '
+	       bat 'tar -a -c -f mobile-test-report-%BUILD_NUMBER%.zip mobiletest/target/surefire-reports/*'
+	       bat 'tar -a -c -f jmeter-test-report-%BUILD_NUMBER%.zip folder/OnlineShop_%BUILD_NUMBER%.html/*'
+               bat '''mkdir test-reports
                
-               
-               curl -T "C:/ProgramData/Jenkins/.jenkins/workspace/Flexib/jmeter-test-report-%BUILD_NUMBER%.zip" -u admin:admin123 -v http://localhost:8081/repository/flexib3i-Pipeline-Reports/
+               cd test-reports	       
+               curl -T "C:/ProgramData/Jenkins/.jenkins/workspace/flexib/Shoppingcart/.scannerwork/report-task.txt" -u admin:admin123 -v http://140.238.240.203:8081/repository/flexib3i-Pipeline-Reports/sast-reports/
+	       curl -T "C:/ProgramData/Jenkins/.jenkins/workspace/flexib/arachni-report-html.zip" -u admin:admin123 -v http://140.238.240.203:8081/repository/flexib3i-Pipeline-Reports/DAST-REPORTS/
+               curl -T "C:/ProgramData/Jenkins/.jenkins/workspace/flexib/web-test-report-%BUILD_NUMBER%.zip" -u admin:admin123 -v http://140.238.240.203:8081/repository/flexib3i-Pipeline-Reports/web-test-report/ 
+               curl -T "C:/ProgramData/Jenkins/.jenkins/workspace/flexib/mobile-test-report-%BUILD_NUMBER%.zip" -u admin:admin123 -v http://140.238.240.203:8081/repository/flexib3i-Pipeline-Reports/mobile-test-report/      
+               curl -T "C:/ProgramData/Jenkins/.jenkins/workspace/flexib/jmeter-test-report-%BUILD_NUMBER%.zip" -u admin:admin123 -v http://140.238.240.203:8081/repository/flexib3i-Pipeline-Reports/jmeter/
                '''
                            }
         }              
@@ -174,16 +181,28 @@ pipeline {
  	post {
         // Clean after build
         always {
-	mail to: "flexib08@gmail.com",
+	mail to: "${env.EMAIL_ID}",
         subject: "Status of pipeline: ${currentBuild.fullDisplayName}",
         body: """Result is ${currentBuild.result}
         
 		Please find build reports................................!
+		SAST REPORTS
+		http://140.238.240.203:8081/repository/flexib3i-Pipeline-Reports/sast-reports/report-task.txt
+		https://sonarcloud.io/dashboard?id=Shoppingcart
+		--------------------------------------------------------------------------------------------------------------------------------------
+		DAST REPORTS
+		http://140.238.240.203:8081/repository/flexib3i-Pipeline-Reports/DAST-REPORTS/arachni-report-html-${BUILD_NUMBER}.zip
+		----------------------------------------------------------------------------------------------------------------------------------------
 		
+		FUNCTIONAL AUTOMATION WEB REPORTS
+		http://140.238.240.203:8081/repository/flexib3i-Pipeline-Reports/web-test-report/web-test-report-${BUILD_NUMBER}.zip
+		----------------------------------------------------------------------------------------------------------------------------------------
+		FUNCTIONAL AUTOMATION MOBILE REPORTS
+		http://140.238.240.203:8081/repository/flexib3i-Pipeline-Reports/mobile-test-report/mobile-test-report-${BUILD_NUMBER}.zip
+		----------------------------------------------------------------------------------------------------------------------------------------		
 		
-
 		JMETER REPORTS
-		http://localhost:8081/repository/flexib3i-Pipeline-Reports/jmeter-test-report/jmeter-test-report-%BUILD_NUMBER%.zip
+		http://140.238.240.203:8081/repository/flexib3i-Pipeline-Reports/jmeter-test-report/jmeter/jmeter-test-report-${BUILD_NUMBER}.zip
 		
 
 		
@@ -191,7 +210,7 @@ pipeline {
 		THE PIPELINE IS SUCCESSFULL AND THIS MAIL IS TO REQUEST FOR QA SIGNOFF AND PROCEED TO UAT 0R PROD ENV
 		
 		For more information please contact DEVSECOPS team...........!"""
-
+		cleanWs()
 }
 }
 }
