@@ -1,7 +1,7 @@
 env.SAST_GIT_URL="https://github.com/harishpallapu/SourceCode_SAST.git"
 env.BUILD_GIT_URL=""
 env.TOMCAT_IP=""
-env.DAST_URL="https://chat.openai.com/chat"
+env.DAST_URL="https://hub.docker.com"
 env.FUNCTIONAL_WEB_GIT_URL=""
 env.FUNCTIONAL_MOBILE_GIT_URL=""
 env.JMETER_GIT_URL=""
