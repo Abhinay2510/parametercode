@@ -248,4 +248,3 @@ if (currentBuild.currentResult == 'SUCCESS') {
 }
 }
 }
-}
