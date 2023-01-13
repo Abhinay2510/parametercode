@@ -163,7 +163,6 @@ pipeline {
         stage('Nexus') {
             steps {
                script {
-						try { 
               if (currentBuild.currentResult == 'SUCCESS') {
            bat "tar -a -c -f web-test-report-%BUILD_NUMBER%.zip webtest/target/surefire-reports/*"
 		   	      } else {
@@ -245,7 +244,6 @@ if (currentBuild.currentResult == 'SUCCESS') {
 		
 		For more information please contact DEVSECOPS team...........!"""
 		
-}
 }
 }
 }
