@@ -21,7 +21,6 @@ pipeline {
                 git "${env.SAST_GIT_URL}"
                 bat "git clone https://github.com/harishpallapu/sonarqube_scannar_windows.git"
                 bat "./sonarqube_scannar_windows/sonar-scanner-4.6.2.2472-windows/bin/sonar-scanner.bat"
-		def getURL = readProperties file: './target/sonar/report-task.txt'
 					        } else {
                                                         echo "skipping the stage ${env.STAGE_NAME}.............................!"				
                    } } catch (err) {
@@ -162,62 +161,23 @@ pipeline {
 		} 			
         stage('Nexus') {
             steps {
-               script {
-              if (currentBuild.currentResult == 'SUCCESS') {
-           bat "tar -a -c -f web-test-report-%BUILD_NUMBER%.zip webtest/target/surefire-reports/*"
-		   	      } else {
-            echo 'web-test-report failed, skipping archiving.'
-          }
-		  if (currentBuild.currentResult == 'SUCCESS') {
-	       bat "tar -a -c -f mobile-test-report-%BUILD_NUMBER%.zip mobiletest/target/surefire-reports/*"
-		   	      } else {
-            echo 'mobile-test-report failed, skipping archiving.'
-          }
-		  if (currentBuild.currentResult == 'SUCCESS') {
-	       bat "tar -a -c -f jmeter-test-report-%BUILD_NUMBER%.zip folder/OnlineShop_%BUILD_NUMBER%.html/*"
-		   	      } else {
-            echo 'jmeter-test-report failed, skipping archiving.'
-          }
-
-                           }
-        }              
-    }
-        stage('Nexus') {
-            steps {
-               script {
-		   
+                
+              
+	       bat 'tar -a -c -f web-test-report-%BUILD_NUMBER%.zip webtest/target/surefire-reports/* '
+	       bat 'tar -a -c -f mobile-test-report-%BUILD_NUMBER%.zip mobiletest/target/surefire-reports/*'
+	       bat 'tar -a -c -f jmeter-test-report-%BUILD_NUMBER%.zip folder/OnlineShop_%BUILD_NUMBER%.html/*'
                bat '''mkdir test-reports
                
-               cd test-reports	
-        if (currentBuild.currentResult == 'SUCCESS') {			   
-            bat   "curl -T "C:/ProgramData/Jenkins/.jenkins/workspace/Flexib/Shoppingcart/.scannerwork/report-task-%BUILD_NUMBER%.txt" -u admin:admin123 -v http://140.238.240.203:8081/repository/flexib3i-Pipeline-Reports/sast-reports/"
-			} else {
-            echo 'jmeter-test-report failed, skipping archiving.'
-          } 
-		 if (currentBuild.currentResult == 'SUCCESS') { 
-	      bat "curl -T "C:/ProgramData/Jenkins/.jenkins/workspace/Flexib/arachni-report-html-%BUILD_NUMBER%.zip" -u admin:admin123 -v http://140.238.240.203:8081/repository/flexib3i-Pipeline-Reports/DAST-REPORTS/"
-		  } else {
-            echo 'jmeter-test-report failed, skipping archiving.'
-          }
-if (currentBuild.currentResult == 'SUCCESS') { 		  
-               bat "curl -T "C:/ProgramData/Jenkins/.jenkins/workspace/Flexib/web-test-report-%BUILD_NUMBER%.zip" -u admin:admin123 -v http://140.238.240.203:8081/repository/flexib3i-Pipeline-Reports/web-test-report/"
-			 		  } else {
-            echo 'jmeter-test-report failed, skipping archiving.'
-          }  
-if (currentBuild.currentResult == 'SUCCESS') { 		  
-              bat "curl -T "C:/ProgramData/Jenkins/.jenkins/workspace/Flexib/mobile-test-report-%BUILD_NUMBER%.zip" -u admin:admin123 -v http://140.238.240.203:8081/repository/flexib3i-Pipeline-Reports/mobile-test-report/ "
-		  } else {
-            echo 'jmeter-test-report failed, skipping archiving.'
-          } 	
-if (currentBuild.currentResult == 'SUCCESS') { 		  
-           bat    "curl -T "C:/ProgramData/Jenkins/.jenkins/workspace/Flexib/jmeter-test-report-%BUILD_NUMBER%.zip" -u admin:admin123 -v http://140.238.240.203:8081/repository/flexib3i-Pipeline-Reports/jmeter/"
-		   		  } else {
-            echo 'jmeter-test-report failed, skipping archiving.'
-          } 
-          '''	       
-	       }
-	       }
-	       }
+               cd test-reports	       
+               curl -T "C:/ProgramData/Jenkins/.jenkins/workspace/fail/Shoppingcart/.scannerwork/report-task.txt" -u admin:admin123 -v http://140.238.240.203:8081/repository/flexib3i-Pipeline-Reports/sast-reports/
+	       curl -T "C:/ProgramData/Jenkins/.jenkins/workspace/fail/arachni-report-html.zip" -u admin:admin123 -v http://140.238.240.203:8081/repository/flexib3i-Pipeline-Reports/DAST-REPORTS/
+               curl -T "C:/ProgramData/Jenkins/.jenkins/workspace/fail/web-test-report-%BUILD_NUMBER%.zip" -u admin:admin123 -v http://140.238.240.203:8081/repository/flexib3i-Pipeline-Reports/web-test-report/ 
+               curl -T "C:/ProgramData/Jenkins/.jenkins/workspace/fail/mobile-test-report-%BUILD_NUMBER%.zip" -u admin:admin123 -v http://140.238.240.203:8081/repository/flexib3i-Pipeline-Reports/mobile-test-report/      
+               curl -T "C:/ProgramData/Jenkins/.jenkins/workspace/fail/jmeter-test-report-%BUILD_NUMBER%.zip" -u admin:admin123 -v http://140.238.240.203:8081/repository/flexib3i-Pipeline-Reports/jmeter/
+               '''
+                           }
+        }              
+    }		
  	post {
         // Clean after build
         always {
@@ -227,7 +187,7 @@ if (currentBuild.currentResult == 'SUCCESS') {
         
 		Please find build reports................................!
 		SAST REPORTS
-		http://140.238.240.203:8081/repository/flexib3i-Pipeline-Reports/sast-reports/report-task-${BUILD_NUMBER}.txt
+		http://140.238.240.203:8081/repository/flexib3i-Pipeline-Reports/sast-reports/report-task.txt
 		https://sonarcloud.io/dashboard?id=Shoppingcart
 		--------------------------------------------------------------------------------------------------------------------------------------
 		DAST REPORTS
@@ -250,8 +210,7 @@ if (currentBuild.currentResult == 'SUCCESS') {
 		THE PIPELINE IS SUCCESSFULL AND THIS MAIL IS TO REQUEST FOR QA SIGNOFF AND PROCEED TO UAT 0R PROD ENV
 		
 		For more information please contact DEVSECOPS team...........!"""
-		
-}
+		cleanWs()
 }
 }
 }
