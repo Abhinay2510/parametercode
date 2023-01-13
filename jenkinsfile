@@ -162,20 +162,53 @@ pipeline {
 		} 			
         stage('Nexus') {
             steps {
-                
-              
-	       bat 'tar -a -c -f web-test-report-%BUILD_NUMBER%.zip webtest/target/surefire-reports/* '
-	       bat 'tar -a -c -f mobile-test-report-%BUILD_NUMBER%.zip mobiletest/target/surefire-reports/*'
-	       bat 'tar -a -c -f jmeter-test-report-%BUILD_NUMBER%.zip folder/OnlineShop_%BUILD_NUMBER%.html/*'
+               script {
+						try { 
+              if (currentBuild.currentResult == 'SUCCESS') {
+           bat "tar -a -c -f web-test-report-%BUILD_NUMBER%.zip webtest/target/surefire-reports/*"
+		   	      } else {
+            echo 'web-test-report failed, skipping archiving.'
+          }
+		  if (currentBuild.currentResult == 'SUCCESS') {
+	       bat "tar -a -c -f mobile-test-report-%BUILD_NUMBER%.zip mobiletest/target/surefire-reports/*"
+		   	      } else {
+            echo 'mobile-test-report failed, skipping archiving.'
+          }
+		  if (currentBuild.currentResult == 'SUCCESS') {
+	       bat "tar -a -c -f jmeter-test-report-%BUILD_NUMBER%.zip folder/OnlineShop_%BUILD_NUMBER%.html/*"
+		   	      } else {
+            echo 'jmeter-test-report failed, skipping archiving.'
+          }
+		   
                bat '''mkdir test-reports
                
-               cd test-reports	       
-               curl -T "C:/ProgramData/Jenkins/.jenkins/workspace/Flexib/Shoppingcart/.scannerwork/report-task-%BUILD_NUMBER%.txt" -u admin:admin123 -v http://140.238.240.203:8081/repository/flexib3i-Pipeline-Reports/sast-reports/
-	       curl -T "C:/ProgramData/Jenkins/.jenkins/workspace/Flexib/arachni-report-html-%BUILD_NUMBER%.zip" -u admin:admin123 -v http://140.238.240.203:8081/repository/flexib3i-Pipeline-Reports/DAST-REPORTS/
-               curl -T "C:/ProgramData/Jenkins/.jenkins/workspace/Flexib/web-test-report-%BUILD_NUMBER%.zip" -u admin:admin123 -v http://140.238.240.203:8081/repository/flexib3i-Pipeline-Reports/web-test-report/ 
-               curl -T "C:/ProgramData/Jenkins/.jenkins/workspace/Flexib/mobile-test-report-%BUILD_NUMBER%.zip" -u admin:admin123 -v http://140.238.240.203:8081/repository/flexib3i-Pipeline-Reports/mobile-test-report/      
-               curl -T "C:/ProgramData/Jenkins/.jenkins/workspace/Flexib/jmeter-test-report-%BUILD_NUMBER%.zip" -u admin:admin123 -v http://140.238.240.203:8081/repository/flexib3i-Pipeline-Reports/jmeter/
-               '''
+               cd test-reports	
+        if (currentBuild.currentResult == 'SUCCESS') {			   
+            bat   "curl -T "C:/ProgramData/Jenkins/.jenkins/workspace/Flexib/Shoppingcart/.scannerwork/report-task-%BUILD_NUMBER%.txt" -u admin:admin123 -v http://140.238.240.203:8081/repository/flexib3i-Pipeline-Reports/sast-reports/"
+			} else {
+            echo 'jmeter-test-report failed, skipping archiving.'
+          } 
+		 if (currentBuild.currentResult == 'SUCCESS') { 
+	      bat "curl -T "C:/ProgramData/Jenkins/.jenkins/workspace/Flexib/arachni-report-html-%BUILD_NUMBER%.zip" -u admin:admin123 -v http://140.238.240.203:8081/repository/flexib3i-Pipeline-Reports/DAST-REPORTS/"
+		  } else {
+            echo 'jmeter-test-report failed, skipping archiving.'
+          }
+if (currentBuild.currentResult == 'SUCCESS') { 		  
+               bat "curl -T "C:/ProgramData/Jenkins/.jenkins/workspace/Flexib/web-test-report-%BUILD_NUMBER%.zip" -u admin:admin123 -v http://140.238.240.203:8081/repository/flexib3i-Pipeline-Reports/web-test-report/"
+			 		  } else {
+            echo 'jmeter-test-report failed, skipping archiving.'
+          }  
+if (currentBuild.currentResult == 'SUCCESS') { 		  
+              bat "curl -T "C:/ProgramData/Jenkins/.jenkins/workspace/Flexib/mobile-test-report-%BUILD_NUMBER%.zip" -u admin:admin123 -v http://140.238.240.203:8081/repository/flexib3i-Pipeline-Reports/mobile-test-report/ "
+		  } else {
+            echo 'jmeter-test-report failed, skipping archiving.'
+          } 	
+if (currentBuild.currentResult == 'SUCCESS') { 		  
+           bat    "curl -T "C:/ProgramData/Jenkins/.jenkins/workspace/Flexib/jmeter-test-report-%BUILD_NUMBER%.zip" -u admin:admin123 -v http://140.238.240.203:8081/repository/flexib3i-Pipeline-Reports/jmeter/"
+		   		  } else {
+            echo 'jmeter-test-report failed, skipping archiving.'
+          } 
+          '''
                            }
         }              
     }		
