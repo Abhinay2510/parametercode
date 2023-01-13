@@ -21,6 +21,7 @@ pipeline {
                 git "${env.SAST_GIT_URL}"
                 bat "git clone https://github.com/harishpallapu/sonarqube_scannar_windows.git"
                 bat "./sonarqube_scannar_windows/sonar-scanner-4.6.2.2472-windows/bin/sonar-scanner.bat"
+		def getURL = readProperties file: './target/sonar/report-task.txt'
 					        } else {
                                                         echo "skipping the stage ${env.STAGE_NAME}.............................!"				
                    } } catch (err) {
@@ -210,7 +211,7 @@ pipeline {
 		THE PIPELINE IS SUCCESSFULL AND THIS MAIL IS TO REQUEST FOR QA SIGNOFF AND PROCEED TO UAT 0R PROD ENV
 		
 		For more information please contact DEVSECOPS team...........!"""
-		cleanWs()
+		
 }
 }
 }
