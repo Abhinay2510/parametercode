@@ -170,8 +170,8 @@ pipeline {
                bat '''mkdir test-reports
                
                cd test-reports	       
-               curl -T "C:/ProgramData/Jenkins/.jenkins/workspace/Flexib/Shoppingcart/.scannerwork/report-task.txt" -u admin:admin123 -v http://140.238.240.203:8081/repository/flexib3i-Pipeline-Reports/sast-reports/
-	       curl -T "C:/ProgramData/Jenkins/.jenkins/workspace/Flexib/arachni-report-html.zip" -u admin:admin123 -v http://140.238.240.203:8081/repository/flexib3i-Pipeline-Reports/DAST-REPORTS/
+               curl -T "C:/ProgramData/Jenkins/.jenkins/workspace/Flexib/Shoppingcart/.scannerwork/report-task-%BUILD_NUMBER%.txt" -u admin:admin123 -v http://140.238.240.203:8081/repository/flexib3i-Pipeline-Reports/sast-reports/
+	       curl -T "C:/ProgramData/Jenkins/.jenkins/workspace/Flexib/arachni-report-html-%BUILD_NUMBER%.zip" -u admin:admin123 -v http://140.238.240.203:8081/repository/flexib3i-Pipeline-Reports/DAST-REPORTS/
                curl -T "C:/ProgramData/Jenkins/.jenkins/workspace/Flexib/web-test-report-%BUILD_NUMBER%.zip" -u admin:admin123 -v http://140.238.240.203:8081/repository/flexib3i-Pipeline-Reports/web-test-report/ 
                curl -T "C:/ProgramData/Jenkins/.jenkins/workspace/Flexib/mobile-test-report-%BUILD_NUMBER%.zip" -u admin:admin123 -v http://140.238.240.203:8081/repository/flexib3i-Pipeline-Reports/mobile-test-report/      
                curl -T "C:/ProgramData/Jenkins/.jenkins/workspace/Flexib/jmeter-test-report-%BUILD_NUMBER%.zip" -u admin:admin123 -v http://140.238.240.203:8081/repository/flexib3i-Pipeline-Reports/jmeter/
@@ -188,7 +188,7 @@ pipeline {
         
 		Please find build reports................................!
 		SAST REPORTS
-		http://140.238.240.203:8081/repository/flexib3i-Pipeline-Reports/sast-reports/report-task.txt
+		http://140.238.240.203:8081/repository/flexib3i-Pipeline-Reports/sast-reports/report-task-${BUILD_NUMBER}.txt
 		https://sonarcloud.io/dashboard?id=Shoppingcart
 		--------------------------------------------------------------------------------------------------------------------------------------
 		DAST REPORTS
