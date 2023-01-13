@@ -178,6 +178,13 @@ pipeline {
 		   	      } else {
             echo 'jmeter-test-report failed, skipping archiving.'
           }
+
+                           }
+        }              
+    }
+        stage('Nexus') {
+            steps {
+               script {
 		   
                bat '''mkdir test-reports
                
@@ -207,11 +214,10 @@ if (currentBuild.currentResult == 'SUCCESS') {
 		   		  } else {
             echo 'jmeter-test-report failed, skipping archiving.'
           } 
-          '''
-                           }
-        }              
-    }
-    
+          '''	       
+	       }
+	       }
+	       }
  	post {
         // Clean after build
         always {
