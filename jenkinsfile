@@ -210,7 +210,8 @@ if (currentBuild.currentResult == 'SUCCESS') {
           '''
                            }
         }              
-    }		
+    }
+    
  	post {
         // Clean after build
         always {
